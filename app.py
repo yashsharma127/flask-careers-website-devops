@@ -14,13 +14,32 @@ app.config['MYSQL_DB'] = os.environ.get('MYSQL_DB', 'default_db')
 mysql = MySQL(app)
 
 
-@app.route("/")
+
 def load_jobs():
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM jobs')
-    jobs = cur.fetchall()   
+    result = cur.fetchall()
     cur.close()
-    return render_template('home.html', jobs=jobs)   
+    jobs = []
+    for row in result:
+        job = {
+            'id': row[0],
+            'title': row[1],
+            'location': row[2],
+            'salary': row[3]
+        }
+        jobs.append(job)
+    return jobs
+
+@app.route("/")
+def hello():
+    jobs = load_jobs()
+    return render_template('home.html', jobs=jobs)
+ 
+
+# here route is making problem i think i have to create route for the 
+#apply.html seperately and when the submit is done i have to create a post 
+# route for that route
 
 @app.route("/apply.html/<int:job_id>", methods=["POST"])
 def apply(job_id):
@@ -39,7 +58,7 @@ def apply(job_id):
 
         flash("Application submitted successfully", "success")   
         
-    return redirect(url_for("load_jobs"))
+    return redirect(url_for("hello"))
 
 
 if __name__ == '__main__':
