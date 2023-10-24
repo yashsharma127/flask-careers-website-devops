@@ -16,7 +16,11 @@ mysql = MySQL(app)
 
 @app.route("/")
 def load_jobs():
-    return render_template('home.html')   
+    cur = mysql.connection.cursor()
+    cur.execute('SELECT * FROM jobs')
+    jobs = cur.fetchall()   
+    cur.close()
+    return render_template('home.html', jobs=jobs)   
 
 
 
