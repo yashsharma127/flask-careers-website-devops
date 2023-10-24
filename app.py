@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template 
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_mysqldb import MySQL
 
 app = Flask(__name__)
@@ -22,6 +22,24 @@ def load_jobs():
     cur.close()
     return render_template('home.html', jobs=jobs)   
 
+@app.route("/apply.html/<int:job_id>", methods=["POST"])
+def apply(job_id):
+    if request.method == "POST":
+        applicant_name = request.form["applicant_name"]
+        applicant_email = request.form["applicant_email"]
+        application_text = request.form["application_text"]
+
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "INSERT INTO applications (job_id, applicant_name, applicant_email, application_text) VALUES (%s, %s, %s, %s)",
+            (job_id, applicant_name, applicant_email, application_text)
+        )
+        mysql.connection.commit()
+        cur.close()
+
+        flash("Application submitted successfully", "success")   
+        
+    return redirect(url_for("load_jobs"))
 
 
 if __name__ == '__main__':
