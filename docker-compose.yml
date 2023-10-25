@@ -1,0 +1,29 @@
+version: '3'
+services:
+  backend:
+    image: yashsharma127/flaskapp:latest
+    ports:
+      - "5000:5000"
+
+    environment:
+      MYSQL_HOST: "mysql"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "admin"
+      MYSQL_DB: "myDb"
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "myDb"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "admin"
+    volumes:
+      - ./jobs.sql:/docker-entrypoint-initdb.d/jobs.sql
+      - mysql-data:/var/lib/mysql
+volumes:
+  mysql-data:
