@@ -1,4 +1,4 @@
-# Flask App with MySQL Docker Setup
+# Flask Carrer Website
 
 
 ## Prerequisites
